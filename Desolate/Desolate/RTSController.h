@@ -2,6 +2,7 @@
 #define RTSCONTROLLER_H
 
 #include <vector>
+
 #include "Pawn.h"
 
 class RTSController {

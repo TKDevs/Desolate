@@ -1,12 +1,6 @@
 #ifndef PAWN_H
 #define PAWN_H
 
-#include <iostream>
-#include <ctime>
-#include <SFML/Graphics.hpp>
-#include "TextureManager.h"
-#include <random>
-
 enum PawnState {
 	IDLE,
 	MOVING,

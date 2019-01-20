@@ -1,10 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#include <deque>
 
-#include "TextureManager.h"
+#include "Projectile.h"
 
 class Player {
 public:
@@ -40,20 +39,41 @@ public:
 		mplayer_rotation = (atan2(msprite.getPosition().y - sf::Mouse::getPosition(*m_window).y, (msprite.getPosition().x - sf::Mouse::getPosition(*m_window).x)) * 180.0f / 3.14f);
 		msprite.setRotation(mplayer_rotation - 90.0f);
 		// End of Sprite Rotation Code
+
+		// Start of Bullet Mechanic
+		if (mbullets.size() != 0 && mbullets[0].isDecayed()) {
+			std::cout << "Bullets: " << mbullets.size() << std::endl;
+			mbullets.pop_front();
+		}
+		
+		if (mgun_shot) {
+			mbullets.push_back(Projectile(m_window, mTM, "Bullet01", msprite.getPosition(), mplayer_rotation, 1750.0f, 30.0f, 2.5f));
+			mgun_shot = false;
+		}
+
+		for (int i = 0; i < mbullets.size(); ++i) {
+			mbullets[i].update(deltaTime);
+		}
 	}
 
 	void render() {
+		for (int i = 0; i < mbullets.size(); ++i) {
+			mbullets[i].render();
+		}
 		m_window->draw(msprite);
 	}
 
 	bool mmove_up, mmove_down, mmove_left, mmove_right, msprinting;
 
+	// Bullet Mechanic Variables
+
+	bool mgun_shot;
+
 	sf::Sprite msprite;
+	std::deque<Projectile> mbullets;
 private:
 
-	float m_movement_speed, msprinting_speed, msprite_speed;
-
-	float mplayer_rotation;
+	float m_movement_speed, msprinting_speed, msprite_speed, mplayer_rotation;
 
 	sf::RenderWindow* m_window;
 	TextureManager* mTM;
