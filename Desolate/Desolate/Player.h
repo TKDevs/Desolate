@@ -46,6 +46,28 @@ public:
 		m_window->draw(msprite);
 	}
 
+	void changeDirection(sf::Keyboard::Key key) {
+		switch (key) {
+		case sf::Keyboard::W:
+			mmove_up = false;
+			break;
+		case sf::Keyboard::A:
+			mmove_left = false;
+			break;
+		case sf::Keyboard::S:
+			mmove_down = false;
+			break;
+		case sf::Keyboard::D:
+			mmove_right = false;
+			break;
+		case sf::Keyboard::LShift:
+			msprinting = false;
+			break;
+		default:
+			break;
+		}
+	}
+
 	bool mmove_up, mmove_down, mmove_left, mmove_right, msprinting;
 
 	sf::Sprite msprite;

@@ -83,25 +83,7 @@ int ZombieMain() {
 				}
 			}
 			if (gevent.type == sf::Event::KeyReleased) {
-				switch (gevent.key.code) {
-				case sf::Keyboard::W:
-					player.mmove_up = false;
-					break;
-				case sf::Keyboard::A:
-					player.mmove_left = false;
-					break;
-				case sf::Keyboard::S:
-					player.mmove_down = false;
-					break;
-				case sf::Keyboard::D:
-					player.mmove_right = false;
-					break;
-				case sf::Keyboard::LShift:
-					player.msprinting = false;
-					break;
-				default:
-					break;
-				}
+				player.changeDirection(gevent.key.code);
 			}
 		}
 

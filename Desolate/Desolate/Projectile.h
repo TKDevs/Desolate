@@ -1,4 +1,4 @@
-/*#ifndef PROJECTILE_H
+#ifndef PROJECTILE_H
 #define PROJECTILEH
 
 #include <SFML/Graphics.hpp>
@@ -10,7 +10,6 @@
 
 class Projectile {
 public:
-	/*
 		Projectile Class Needs atleast:
 			- Window pointer
 			- TextureManager pointer
@@ -52,4 +51,4 @@ private:
 	bool    mIsDecayed;
 };
 
-#endif*/
+#endif

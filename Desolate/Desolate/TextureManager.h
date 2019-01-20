@@ -10,44 +10,19 @@ public:
 	TextureManager() {
 
 	}
-	void addTexture(std::string textureID, std::string fileLocation)
-	{
+	void addTexture(std::string textureID, std::string fileLocation){
 		sf::Texture tex;
 		tex.loadFromFile(fileLocation);
 		this->Textures[textureID] = tex;
 		return;
 	}
-	void removeTexture(std::string textureID)
-	{
+	void removeTexture(std::string textureID){
 		Textures.erase(textureID);
 	}
-	sf::Texture& getTexture(std::string textureID)
-	{
+	sf::Texture& getTexture(std::string textureID){
 		return Textures.at(textureID);
 	}
 private:
 	std::map<std::string, sf::Texture> Textures;
 };
-class Projectile {
-public:
-	Projectile(sf::Vector2f startPos, float angle, float projectileSpeed) {
-
-		mCircle.setPosition(startPos);
-		mCircle.setRotation(angle);
-		mProjectileSpeed = projectileSpeed;
-	}
-
-	void update(float deltaTime) {
-
-	}
-
-	void render() {
-
-	}
-private:
-	sf::CircleShape mCircle;
-
-	float mProjectileSpeed;
-};
-
 #endif
