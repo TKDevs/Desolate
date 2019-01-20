@@ -47,7 +47,7 @@ public:
 		}
 		
 		if (mgun_shot) {
-			mbullets.push_back(Projectile(m_window, mTM, "Bullet01", msprite.getPosition(), mplayer_rotation, 1750.0f, 30.0f, 2.5f));
+			mbullets.push_back(Projectile(m_window, mTM, "Bullet01", msprite.getPosition(), mplayer_rotation, 1700.0f, 30.0f, 2.5f));
 			mgun_shot = false;
 		}
 
