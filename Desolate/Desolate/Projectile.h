@@ -3,7 +3,8 @@
 
 class Projectile {
 public:
-		/*Projectile Class Needs atleast:
+	/*
+		Projectile Class Needs atleast:
 			- Window pointer
 			- TextureManager pointer
 			- Texture Name
