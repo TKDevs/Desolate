@@ -1,12 +1,6 @@
 #ifndef ZOMBIE_H
 #define ZOMBIE_H
 
-#include <iostream>
-#include <SFML/Graphics.hpp>
-
-#include "TextureManager.h"
-#include "Player.h"
-
 class Zombie {
 public:
 	Zombie(sf::RenderWindow* window, Player* player, TextureManager* tM) : mwindow(window), mplayer(player), mTM(tM) {

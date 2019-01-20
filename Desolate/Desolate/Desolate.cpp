@@ -1,7 +1,5 @@
 #include <iostream>
-#include <map>
 #include <SFML/Graphics.hpp>
-
 #include "TextureManager.h"
 #include "Player.h"
 #include "Zombie.h"
@@ -27,12 +25,10 @@
 		- I want to clean up Legacy Code for Desolate. [IN-PROGESS]
 */
 
-
-
-
 void loadTextures(TextureManager& tM) {
 	tM.addTexture("Human01", "Data/Human01.png");
 	tM.addTexture("Zombie01", "Data/Zombie01.png");
+	tM.addTexture("Bullet01", "Data/Bullet01.png");
 }
 
 int ZombieMain() {
@@ -55,53 +51,27 @@ int ZombieMain() {
 		sf::Time dt = delta_clock.restart();
 
 		while (gwindow.pollEvent(gevent)) {
+			if (gevent.type == sf::Event::MouseButtonPressed) {
+				if (gevent.mouseButton.button == sf::Mouse::Left)
+					player.mgun_shot = true;
+			}
+			if (gevent.type == sf::Event::MouseButtonReleased) {
+				if (gevent.mouseButton.button == sf::Mouse::Left)
+					player.mgun_shot = false;
+			}
 			if (gevent.type == sf::Event::Closed) {
 				gwindow.close();
 			}
 			if (gevent.type == sf::Event::KeyPressed) {
+				player.changeDirection(gevent);
 				switch (gevent.key.code) {
 				case sf::Keyboard::Escape:
 					gwindow.close();
 					break;
-				case sf::Keyboard::W:
-					player.mmove_up = true;
-					break;
-				case sf::Keyboard::A:
-					player.mmove_left = true;
-					break;
-				case sf::Keyboard::S:
-					player.mmove_down = true;
-					break;
-				case sf::Keyboard::D:
-					player.mmove_right = true;
-					break;
-				case sf::Keyboard::LShift:
-					player.msprinting = true;
-					break;
-				default:
-					break;
 				}
 			}
 			if (gevent.type == sf::Event::KeyReleased) {
-				switch (gevent.key.code) {
-				case sf::Keyboard::W:
-					player.mmove_up = false;
-					break;
-				case sf::Keyboard::A:
-					player.mmove_left = false;
-					break;
-				case sf::Keyboard::S:
-					player.mmove_down = false;
-					break;
-				case sf::Keyboard::D:
-					player.mmove_right = false;
-					break;
-				case sf::Keyboard::LShift:
-					player.msprinting = false;
-					break;
-				default:
-					break;
-				}
+				player.changeDirection(gevent);
 			}
 		}
 

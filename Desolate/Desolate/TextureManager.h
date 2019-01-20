@@ -1,9 +1,6 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
 
-#include <iostream>
-#include <SFML/Graphics.hpp>
-
 class TextureManager
 {
 public:
@@ -27,27 +24,6 @@ public:
 	}
 private:
 	std::map<std::string, sf::Texture> Textures;
-};
-class Projectile {
-public:
-	Projectile(sf::Vector2f startPos, float angle, float projectileSpeed) {
-
-		mCircle.setPosition(startPos);
-		mCircle.setRotation(angle);
-		mProjectileSpeed = projectileSpeed;
-	}
-
-	void update(float deltaTime) {
-
-	}
-
-	void render() {
-
-	}
-private:
-	sf::CircleShape mCircle;
-
-	float mProjectileSpeed;
 };
 
 #endif
