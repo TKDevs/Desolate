@@ -1,10 +1,9 @@
 #ifndef PROJECTILE_H
-#define PROJECTILE_H
+#define PROJECTILEH
 
 class Projectile {
 public:
-	/*
-		Projectile Class Needs atleast:
+		/*Projectile Class Needs atleast:
 			- Window pointer
 			- TextureManager pointer
 			- Texture Name
