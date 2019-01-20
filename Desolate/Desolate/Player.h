@@ -46,25 +46,49 @@ public:
 		m_window->draw(msprite);
 	}
 
-	void changeDirection(sf::Keyboard::Key key) {
-		switch (key) {
-		case sf::Keyboard::W:
-			mmove_up = false;
-			break;
-		case sf::Keyboard::A:
-			mmove_left = false;
-			break;
-		case sf::Keyboard::S:
-			mmove_down = false;
-			break;
-		case sf::Keyboard::D:
-			mmove_right = false;
-			break;
-		case sf::Keyboard::LShift:
-			msprinting = false;
-			break;
-		default:
-			break;
+	void changeDirection(sf::Event event) {
+		if (event.type == sf::Event::KeyPressed) {
+			switch(event.key.code){
+			case sf::Keyboard::W:
+				mmove_up = true;
+				break;
+			case sf::Keyboard::A:
+				mmove_left = true;
+				break;
+			case sf::Keyboard::S:
+				mmove_down = true;
+				break;
+			case sf::Keyboard::D:
+				mmove_right = true;
+				break;
+			case sf::Keyboard::LShift:
+				msprinting = true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (event.type == sf::Event::KeyReleased) {
+			switch (event.key.code) {
+			case sf::Keyboard::W:
+				mmove_up = false;
+				break;
+			case sf::Keyboard::A:
+				mmove_left = false;
+				break;
+			case sf::Keyboard::S:
+				mmove_down = false;
+				break;
+			case sf::Keyboard::D:
+				mmove_right = false;
+				break;
+			case sf::Keyboard::LShift:
+				msprinting = false;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
