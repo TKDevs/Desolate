@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Zombie.h"
 #include "Pawn.h"
+#include "Entity.h"
+
 //Agy testing shit
 
 /*

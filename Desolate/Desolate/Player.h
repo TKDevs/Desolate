@@ -4,26 +4,26 @@
 #include <deque>
 
 #include "Projectile.h"
+#include "Entity.h"
 
-class Player {
+class Player : public Entity {
 public:
-	Player(sf::RenderWindow* window, TextureManager* tM) : m_window(window), mTM(tM) {
+	Player(sf::RenderWindow* window, TextureManager* tM) : Entity(window, tM){
 		mmove_up = false, mmove_down = false, mmove_left = false, mmove_right = false;
-		m_movement_speed = 250.0f;
+		mmovement_speed = 250.0f;
 		msprinting_speed = 450.0f;
-		msprite_speed = m_movement_speed;
-		mplayer_rotation = 0.0f;
+		msprite_speed = mmovement_speed;
 
-		msprite.setTexture(mTM->getTexture("Human01"));
+		msprite.setTexture(mtm->getTexture("Human01"));
 		msprite.setOrigin(12.0f, 12.0f);
 		msprite.setScale(sf::Vector2f(4.0f, 4.0f));
 		msprite.setPosition(sf::Vector2f(640, 480));
-		msprite.setRotation(mplayer_rotation);
+		msprite.setRotation(mrotation);
 	}
 
 	void update(float deltaTime) {
 		// Movement Code:
-		(msprinting) ? msprite_speed = msprinting_speed : msprite_speed = m_movement_speed;
+		(msprinting) ? msprite_speed = msprinting_speed : msprite_speed = mmovement_speed;
 
 		if (mmove_up)
 			msprite.move(sf::Vector2f(0.0f, -msprite_speed * deltaTime));
@@ -36,8 +36,8 @@ public:
 		// End of Movement Code
 
 		// Sprite Rotation Code:
-		mplayer_rotation = (atan2(msprite.getPosition().y - sf::Mouse::getPosition(*m_window).y, (msprite.getPosition().x - sf::Mouse::getPosition(*m_window).x)) * 180.0f / 3.14f);
-		msprite.setRotation(mplayer_rotation - 90.0f);
+		mrotation = (atan2(msprite.getPosition().y - sf::Mouse::getPosition(*mwindow).y, (msprite.getPosition().x - sf::Mouse::getPosition(*mwindow).x)) * 180.0f / 3.14f);
+		msprite.setRotation(mrotation - 90.0f);
 		// End of Sprite Rotation Code
 
 		// Start of Bullet Mechanic
@@ -47,7 +47,7 @@ public:
 		}
 		
 		if (mgun_shot) {
-			mbullets.push_back(Projectile(m_window, mTM, "Bullet01", msprite.getPosition(), mplayer_rotation, 1700.0f, 30.0f, 2.5f));
+			mbullets.push_back(Projectile(mwindow, mtm, "Bullet01", msprite.getPosition(), mrotation, 1700.0f, 30.0f, 2.5f));
 			mgun_shot = false;
 		}
 
@@ -60,7 +60,7 @@ public:
 		for (int i = 0; i < mbullets.size(); ++i) {
 			mbullets[i].render();
 		}
-		m_window->draw(msprite);
+		mwindow->draw(msprite);
 	}
 
 	void changeDirection(sf::Event event) {
@@ -115,14 +115,9 @@ public:
 
 	bool mgun_shot;
 
-	sf::Sprite msprite;
 	std::deque<Projectile> mbullets;
 private:
-
-	float m_movement_speed, msprinting_speed, msprite_speed, mplayer_rotation;
-
-	sf::RenderWindow* m_window;
-	TextureManager* mTM;
+	float msprinting_speed, msprite_speed;
 };
 
 #endif

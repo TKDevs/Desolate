@@ -123,6 +123,7 @@
     <ClCompile Include="Desolate.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
