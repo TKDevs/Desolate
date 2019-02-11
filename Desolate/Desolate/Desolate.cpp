@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Zombie.h"
 #include "Scene.h"
+#include "Pawn.h"
 
 void loadTextures(TextureManager& tM) {
 	tM.addTexture("Human01", "Data/Human01.png");
