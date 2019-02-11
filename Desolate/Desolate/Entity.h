@@ -1,25 +1,42 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <SFML/Graphics.hpp>
+#include "TextureManager.h"
+
 class Entity {
 public:
-	Entity(sf::RenderWindow* window, TextureManager* tm): mwindow(window), mtm(tm){
-		mrotation = 0.0f;
+	Entity(sf::RenderWindow* window, TextureManager* tm) {
+		mWindow = window;
+		mTextureManager = tm;
+		mEntityID++;
+		std::cout << "Entity Initialized with ID: " << mEntityID << std::endl;
 	}
+
+	virtual void update(float deltaTime) {
+
+	}
+
 	virtual void render() {
-		mwindow->draw(msprite);
+		mWindow->draw(mSprite);
 	}
-	virtual void update() {}
+
+	// Get / Set Functions
+
 	sf::Vector2f getPosition() {
-		return msprite.getPosition();
+		return mSprite.getPosition();
+	}
+
+	int getID() {
+		return mEntityID;
 	}
 
 protected:
-	float mmovement_speed;
-	float mrotation;
-	TextureManager* mtm;
-	sf::RenderWindow* mwindow;
-	sf::Sprite msprite;
+	TextureManager*		mTextureManager;
+	sf::RenderWindow*	mWindow;
+	sf::Sprite			mSprite;
+	static int mEntityID;
 };
+int Entity::mEntityID = 0;
 
 #endif

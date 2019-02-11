@@ -1,93 +1,63 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "TextureManager.h"
+#include "Entity.h"
 #include "Player.h"
 #include "Zombie.h"
-#include "Pawn.h"
-#include "Entity.h"
-
-//Agy testing shit
-
-/*
-	I am going to continue to work on the game from here
-
-	I've decided to go for a more survival-style game instead of the arcade style originally intended.
-
-	Updates:
-		- I've modified how input works in this program. Instead of all the input being managed in the Player class,
-		  I moved the input management to the main loop instead. This should prove to be a preferred alternative to what
-		  I was doing previously.
-		- I've began implementing pointers in places that should make the code run more efficiently.
-		- I've added a deltaTime to the game.
-			- Player movement is now based on the deltaTime variable. This should prove useful when implementing multiplayer
-			  down the line.
-
-	Changes I want to Occur:
-		- I want to create a GUI class for this game. [NOT STARTED]
-		- I want to create a Loot System [NOT STARTED]
-		- I want to clean up Legacy Code for Desolate. [IN-PROGESS]
-*/
+#include "Scene.h"
 
 void loadTextures(TextureManager& tM) {
 	tM.addTexture("Human01", "Data/Human01.png");
 	tM.addTexture("Zombie01", "Data/Zombie01.png");
+	tM.addTexture("Zombie02", "Data/Zombie02.png");
+	tM.addTexture("Zombie03", "Data/Zombie03.png");
+	tM.addTexture("Zombie04", "Data/Zombie04.png");
 	tM.addTexture("Bullet01", "Data/Bullet01.png");
+	tM.addTexture("Background01", "Data/background01.png");
 }
 
-int ZombieMain() {
-	sf::RenderWindow gwindow(sf::VideoMode(1280, 960), "Desolate"); //gwindow = global window
-	sf::Event gevent;
-	sf::Clock delta_clock;
+void ZombieMain() {
+	sf::RenderWindow gWindow(sf::VideoMode(1280, 960), "Derilict v1.0");
+	sf::Event gEvent;
+	sf::Clock deltaClock;
+	TextureManager gTextureManager;
+	loadTextures(gTextureManager);
 
-	TextureManager tM;
+	Player* player = new Player(&gWindow, &gTextureManager);
 
-	loadTextures(tM);
-
-	Player player(&gwindow, &tM);
-
-	Zombie zombie(&gwindow, &player, &tM);
-
-	sf::Clock clock;
-
-	while (gwindow.isOpen()) {
-
-		sf::Time dt = delta_clock.restart();
-
-		while (gwindow.pollEvent(gevent)) {
-			if (gevent.type == sf::Event::MouseButtonPressed) {
-				if (gevent.mouseButton.button == sf::Mouse::Left)
-					player.mgun_shot = true;
-			}
-			if (gevent.type == sf::Event::MouseButtonReleased) {
-				if (gevent.mouseButton.button == sf::Mouse::Left)
-					player.mgun_shot = false;
-			}
-			if (gevent.type == sf::Event::Closed) {
-				gwindow.close();
-			}
-			if (gevent.type == sf::Event::KeyPressed) {
-				player.changeDirection(gevent);
-				switch (gevent.key.code) {
-				case sf::Keyboard::Escape:
-					gwindow.close();
-					break;
-				}
-			}
-			if (gevent.type == sf::Event::KeyReleased) {
-				player.changeDirection(gevent);
-			}
-		}
-
-		player.update(dt.asSeconds());
-		zombie.update(dt.asSeconds());
-
-		gwindow.clear(sf::Color(13, 39, 38, 255));
-		player.render();
-		zombie.render();
-		gwindow.display();
+	Scene scene(&gWindow, &gTextureManager);
+	scene.setSceneBackground("Background01");
+	scene.addPlayer(player);
+	for (int i = 0; i < 1; ++i) {
+		scene.addZombie(new Zombie(&gWindow, &gTextureManager, player, NORMAL));
 	}
 
-	return 0;
+	while (gWindow.isOpen()) {
+		sf::Time dT = deltaClock.restart();
+		// Input Code
+		while (gWindow.pollEvent(gEvent)) {
+			if (gEvent.type == sf::Event::Closed)
+				gWindow.close();
+			if (gEvent.type == sf::Event::KeyPressed) {
+				player->changeDirection(gEvent);
+				if (gEvent.key.code == sf::Keyboard::Escape)
+					gWindow.close();
+			}
+			if (gEvent.type == sf::Event::KeyReleased) {
+				player->changeDirection(gEvent);
+			}
+		}
+		// Update Code
+		sf::View view = gWindow.getView();
+		view.setCenter(player->getPosition());
+		gWindow.setView(view);
+		scene.update(dT.asSeconds());
+		// Render Code
+		gWindow.clear(sf::Color(13, 39, 38, 255));
+		scene.render();
+		gWindow.display();
+	}
+
 }
 
 int RTSMain() {

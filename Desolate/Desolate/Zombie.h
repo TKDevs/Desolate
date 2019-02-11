@@ -1,55 +1,89 @@
 #ifndef ZOMBIE_H
 #define ZOMBIE_H
+
+#include <iostream>
+#include <SFML/Graphics.hpp>
 #include "Entity.h"
+#include "Player.h"
+
+enum ZOMBIETYPE {
+	NORMAL,
+	SCOUT,
+	TANK
+};
 
 class Zombie : public Entity {
 public:
-	Zombie(sf::RenderWindow* window, Player* player, TextureManager* tM) : Entity(window, tM){
-		mmovement_speed = 200.0f;
+	Zombie(sf::RenderWindow* window, TextureManager* tM, Player* player, ZOMBIETYPE type) : Entity(window, tM) {
+		int variance = rand() % 10 + 1;
+		switch (type) {
+		case NORMAL:
+			mZombieSpeed = 200.0f + variance;
+			mZombieDamage = 10.0f;
+			mZombieAtkSpd = 1.0f;
+			mDetectRange = 500.0f;
+			mSprite.setTexture(tM->getTexture("Zombie01"));
+			break;
+		case SCOUT:
+			mZombieSpeed = 275.0f + variance;
+			mZombieDamage = 5.0f;
+			mZombieAtkSpd = 1.0f;
+			mDetectRange = 600.0f;
+			mSprite.setTexture(tM->getTexture("Zombie04"));
+			break;
 
-		msprite.setTexture(mtm->getTexture("Zombie01"));
-		msprite.setOrigin(12.0f, 12.0f);
-		msprite.setScale(sf::Vector2f(4.0f, 4.0f));
-		msprite.setPosition(sf::Vector2f(50.0f, 50.0f));
-		msprite.setRotation(0.0f);
-
-		m_last_seen_player = msprite.getPosition();
+		case TANK:
+			mZombieSpeed = 100.0f + variance;
+			mZombieDamage = 20.0f;
+			mZombieAtkSpd = 1.0f;
+			mDetectRange = 300.0f;
+			mSprite.setTexture(tM->getTexture("Zombie02"));
+			break;
+		}
+		mPlayer = player;
+		mSpriteRotation = 0.0f;
+		mSprite.setRotation(0.0f);
+		mSprite.setOrigin(12.0f, 12.0f);
+		mSprite.setScale(sf::Vector2f(3.0f, 3.0f));
+		mSprite.setPosition(sf::Vector2f(75.0f, 75.0f));
+		mLastSeenPlayer = mSprite.getPosition();
 	}
 
 	void update(float deltaTime) {
-		if (getDistance(msprite.getPosition(), mplayer->getPosition()) <= 500.0f) {
-			moveTo(mplayer->getPosition(), deltaTime);
-			m_last_seen_player = mplayer->getPosition();
+		if (getDistance(mPlayer->getPosition(), mSprite.getPosition()) <= mDetectRange) {
+			moveTo(mPlayer->getPosition(), deltaTime);
+			mLastSeenPlayer = mPlayer->getPosition();
 		}
 		else {
-			moveTo(m_last_seen_player, deltaTime);
+			moveTo(mLastSeenPlayer, deltaTime);
 		}
 	}
-
-	void render() {
-		mwindow->draw(msprite);
-	}
-private:
-
+protected:
 	float getDistance(sf::Vector2f pos1, sf::Vector2f pos2) {
 		return sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y));
 	}
 
 	void moveTo(sf::Vector2f targetPos, float deltaTime) {
-		mrotation = (atan2(msprite.getPosition().y - targetPos.y, msprite.getPosition().x - targetPos.x) * 180.0f / 3.14f);
-		msprite.setRotation(mrotation - 90.0f);
-		float movementX = static_cast<float>(cos(3.14 * mrotation / 180) * mmovement_speed * deltaTime);
-		float movementY = static_cast<float>(sin(3.14 * mrotation / 180) * mmovement_speed * deltaTime);
-		if (getDistance(msprite.getPosition(), targetPos) >= 85.0f) {
-			msprite.move(-movementX, -movementY);
+		mSpriteRotation = (atan2(mSprite.getPosition().y - targetPos.y, mSprite.getPosition().x - targetPos.x) * 180.0f / 3.14f);
+		mSprite.setRotation(mSpriteRotation - 90.0f);
+		float movementX = static_cast<float>(cos(3.14 * mSpriteRotation / 180) * mZombieSpeed * deltaTime);
+		float movementY = static_cast<float>(sin(3.14 * mSpriteRotation / 180) * mZombieSpeed * deltaTime);
+		if (getDistance(mSprite.getPosition(), targetPos) >= 45.0f) {
+			mSprite.move(-movementX, -movementY);
 		}
 		else {
-			msprite.move(0.0f, 0.0f);
+			mSprite.move(0.0f, 0.0f);
 		}
 	}
 
-	sf::Vector2f m_last_seen_player;
-	Player* mplayer;
+	// Zombie Specifications
+	float mZombieSpeed;
+	float mZombieDamage;
+	float mZombieAtkSpd;
+	float mSpriteRotation;
+	float mDetectRange;
+	Player* mPlayer;
+	sf::Vector2f mLastSeenPlayer;
 };
 
 #endif
