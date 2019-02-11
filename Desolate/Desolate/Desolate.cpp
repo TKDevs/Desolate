@@ -96,7 +96,7 @@ int RTSMain() {
 				if (gEvent.mouseButton.button == sf::Mouse::Left) {
 					for (int i = 0; i != pawns.size(); i++) {
 						pawns[i].mpawn_state = MOVING;
-						pawns[i].mTarget = sf::Vector2f(sf::Mouse::getPosition(gWindow));
+						pawns[i].target_ = sf::Vector2f(sf::Mouse::getPosition(gWindow));
 					}
 				}
 			}
