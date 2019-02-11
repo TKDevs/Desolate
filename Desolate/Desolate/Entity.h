@@ -6,37 +6,37 @@
 
 class Entity {
 public:
-	Entity(sf::RenderWindow* window, TextureManager* tm) {
-		mWindow = window;
-		mTextureManager = tm;
-		mEntityID++;
-		std::cout << "Entity Initialized with ID: " << mEntityID << std::endl;
+	Entity(sf::RenderWindow* window, TextureManager* tM) {
+		window_ = window;
+		tM_ = tM;
+		entity_ID_++;
+		std::cout << "Entity Initialized with ID: " << entity_ID_ << std::endl;
 	}
 
-	virtual void update(float deltaTime) {
+	virtual void update(float dT) {
 
 	}
 
 	virtual void render() {
-		mWindow->draw(mSprite);
+		window_->draw(sprite_);
 	}
 
 	// Get / Set Functions
 
 	sf::Vector2f getPosition() {
-		return mSprite.getPosition();
+		return sprite_.getPosition();
 	}
 
 	int getID() {
-		return mEntityID;
+		return entity_ID_;
 	}
 
 protected:
-	TextureManager*		mTextureManager;
-	sf::RenderWindow*	mWindow;
-	sf::Sprite			mSprite;
-	static int mEntityID;
+	TextureManager*		tM_;
+	sf::RenderWindow*	window_;
+	sf::Sprite			sprite_;
+	static int entity_ID_;
 };
-int Entity::mEntityID = 0;
+int Entity::entity_ID_ = 0;
 
 #endif

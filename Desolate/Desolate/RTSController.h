@@ -15,7 +15,7 @@ public:
 
 	void render();
 private:
-	std::vector<Pawn> mPawns;
+	std::vector<Pawn> pawns_;
 };
 
 #endif

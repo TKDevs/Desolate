@@ -9,53 +9,53 @@
 class Player : public Entity {
 public:
 	Player(sf::RenderWindow* window, TextureManager* tM) : Entity(window, tM) {
-		mMoveUp = false;
-		mMoveDown = false;
-		mMoveLeft = false;
-		mMoveRight = false;
-		mSprintingSpeed = 350.0f;
-		mNormalSpeed = 250.0f;
-		mSpriteSpeed = mNormalSpeed;
-		mSpriteRotation = 0.0f;
+		move_up_ = false;
+		move_down_ = false;
+		move_left_ = false;
+		move_right_ = false;
+		sprinting_speed_ = 350.0f;
+		normal_speed_ = 250.0f;
+		sprite_speed_ = normal_speed_;
+		sprite_rotation_ = 0.0f;
 
-		mSprite.setTexture(tM->getTexture("Human01"));
-		mSprite.setOrigin(12.0f, 12.0f);
-		mSprite.setScale(sf::Vector2f(3.0f, 3.0f));
-		mSprite.setPosition(sf::Vector2f(640, 480));
-		mSprite.setRotation(mSpriteRotation);
+		sprite_.setTexture(tM->getTexture("Human01"));
+		sprite_.setOrigin(12.0f, 12.0f);
+		sprite_.setScale(sf::Vector2f(3.0f, 3.0f));
+		sprite_.setPosition(sf::Vector2f(640, 480));
+		sprite_.setRotation(sprite_rotation_);
 	}
 
-	void update(float deltaTime) {
-		(mSprinting) ? mSpriteSpeed = mSprintingSpeed : mSpriteSpeed = mNormalSpeed;
-		if (mMoveUp)
-			mSprite.move(sf::Vector2f(0.0f, -mSpriteSpeed * deltaTime));
-		if (mMoveDown)
-			mSprite.move(sf::Vector2f(0.0f, mSpriteSpeed * deltaTime));
-		if (mMoveLeft)
-			mSprite.move(sf::Vector2f(-mSpriteSpeed * deltaTime, 0.0f));
-		if (mMoveRight)
-			mSprite.move(sf::Vector2f(mSpriteSpeed * deltaTime, 0.0f));
-		mSpriteRotation = (atan2(mSprite.getPosition().y - mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow)).y, (mSprite.getPosition().x - mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow)).x)) * 180.0f / 3.14f);
-		mSprite.setRotation(mSpriteRotation - 90.0f);
+	void update(float dT) {
+		(sprinting_) ? sprite_speed_ = sprinting_speed_ : sprite_speed_ = normal_speed_;
+		if (move_up_)
+			sprite_.move(sf::Vector2f(0.0f, -sprite_speed_ * dT));
+		if (move_down_)
+			sprite_.move(sf::Vector2f(0.0f, sprite_speed_ * dT));
+		if (move_left_)
+			sprite_.move(sf::Vector2f(-sprite_speed_ * dT, 0.0f));
+		if (move_right_)
+			sprite_.move(sf::Vector2f(sprite_speed_ * dT, 0.0f));
+		sprite_rotation_ = (atan2(sprite_.getPosition().y - window_->mapPixelToCoords(sf::Mouse::getPosition(*window_)).y, (sprite_.getPosition().x - window_->mapPixelToCoords(sf::Mouse::getPosition(*window_)).x)) * 180.0f / 3.14f);
+		sprite_.setRotation(sprite_rotation_ - 90.0f);
 	}
 
 	void changeDirection(sf::Event event) {
 		if (event.type == sf::Event::KeyPressed) {
 			switch (event.key.code) {
 			case sf::Keyboard::W:
-				mMoveUp = true;
+				move_up_ = true;
 				break;
 			case sf::Keyboard::A:
-				mMoveLeft = true;
+				move_left_ = true;
 				break;
 			case sf::Keyboard::S:
-				mMoveDown = true;
+				move_down_ = true;
 				break;
 			case sf::Keyboard::D:
-				mMoveRight = true;
+				move_right_ = true;
 				break;
 			case sf::Keyboard::LShift:
-				mSprinting = true;
+				sprinting_ = true;
 				break;
 			default:
 				break;
@@ -65,19 +65,19 @@ public:
 		if (event.type == sf::Event::KeyReleased) {
 			switch (event.key.code) {
 			case sf::Keyboard::W:
-				mMoveUp = false;
+				move_up_ = false;
 				break;
 			case sf::Keyboard::A:
-				mMoveLeft = false;
+				move_left_ = false;
 				break;
 			case sf::Keyboard::S:
-				mMoveDown = false;
+				move_down_ = false;
 				break;
 			case sf::Keyboard::D:
-				mMoveRight = false;
+				move_right_ = false;
 				break;
 			case sf::Keyboard::LShift:
-				mSprinting = false;
+				sprinting_ = false;
 				break;
 			default:
 				break;
@@ -85,8 +85,8 @@ public:
 		}
 	}
 private:
-	bool mMoveUp, mMoveDown, mMoveLeft, mMoveRight, mSprinting, mShotGun;
-	float mSprintingSpeed, mNormalSpeed, mSpriteSpeed, mSpriteRotation;
+	bool move_up_, move_down_, move_left_, move_right_, sprinting_, shot_gun_;
+	float sprinting_speed_, normal_speed_, sprite_speed_, sprite_rotation_;
 };
 
 #endif

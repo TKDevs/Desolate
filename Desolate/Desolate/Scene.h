@@ -11,69 +11,69 @@
 
 class Scene {
 public:
-	Scene(sf::RenderWindow* window, TextureManager* tm) {
-		mWindow = window;
-		mTextureManager = tm;
+	Scene(sf::RenderWindow* window, TextureManager* tM) {
+		window_ = window;
+		texture_manager_ = tM;
 	}
 
-	void update(float deltaTime) {
-		for (int i = 0; i < mPlayerList.size(); ++i) {
-			mPlayerList[i]->update(deltaTime);
+	void update(float dT) {
+		for (int i = 0; i < player_list_.size(); ++i) {
+			player_list_[i]->update(dT);
 		}
-		for (int i = 0; i < mZombieList.size(); ++i) {
-			mZombieList[i]->update(deltaTime);
+		for (int i = 0; i < zombie_list_.size(); ++i) {
+			zombie_list_[i]->update(dT);
 		}
 	}
 
 	void render() {
-		mWindow->draw(mSceneBackground);
-		for (int i = 0; i < mPlayerList.size(); ++i) {
-			mPlayerList[i]->render();
+		window_->draw(scene_background_);
+		for (int i = 0; i < player_list_.size(); ++i) {
+			player_list_[i]->render();
 		}
-		for (int i = 0; i < mZombieList.size(); ++i) {
-			mZombieList[i]->render();
+		for (int i = 0; i < zombie_list_.size(); ++i) {
+			zombie_list_[i]->render();
 		}
 	}
 
 	void setSceneBackground(std::string name) {
-		mSceneBackground.setTexture(mTextureManager->getTexture(name));
+		scene_background_.setTexture(texture_manager_->getTexture(name));
 	}
 
 	void addPlayer(Player* player) {
-		mPlayerList.push_back(player);
+		player_list_.push_back(player);
 	}
 
 	void addZombie(Zombie* zombie) {
-		mZombieList.push_back(zombie);
+		zombie_list_.push_back(zombie);
 	}
 
 	void removePlayer(Player* player) {
-		for (int i = 0; i < mPlayerList.size(); ++i) {
-			if (player->getID() == mPlayerList[i]->getID()) {
+		for (int i = 0; i < player_list_.size(); ++i) {
+			if (player->getID() == player_list_[i]->getID()) {
 				delete player;
-				delete mPlayerList[i];
-				mPlayerList.erase(mPlayerList.begin() + i);
+				delete player_list_[i];
+				player_list_.erase(player_list_.begin() + i);
 			}
 		}
 	}
 
 	void removeZombie(Zombie* zombie) {
-		for (int i = 0; i < mZombieList.size(); ++i) {
-			if (zombie->getID() == mZombieList[i]->getID()) {
+		for (int i = 0; i < zombie_list_.size(); ++i) {
+			if (zombie->getID() == zombie_list_[i]->getID()) {
 				delete zombie;
-				delete mZombieList[i];
-				mZombieList.erase(mZombieList.begin() + i);
+				delete zombie_list_[i];
+				zombie_list_.erase(zombie_list_.begin() + i);
 			}
 		}
 	}
 private:
-	sf::RenderWindow* mWindow;
-	TextureManager* mTextureManager;
+	sf::RenderWindow* window_;
+	TextureManager* texture_manager_;
 
-	sf::Sprite mSceneBackground;
+	sf::Sprite scene_background_;
 
-	std::vector<Player*> mPlayerList;
-	std::vector<Zombie*> mZombieList;
+	std::vector<Player*> player_list_;
+	std::vector<Zombie*> zombie_list_;
 };
 
 #endif
