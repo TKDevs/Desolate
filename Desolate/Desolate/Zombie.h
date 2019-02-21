@@ -41,11 +41,45 @@ public:
 			break;
 		}
 		player_ = player;
-		sprite_rotation_ = 0.0f;
-		sprite_.setRotation(0.0f);
+		sprite_rotation_ = static_cast<float>(rand() % 360 + 1);
+		sprite_.setRotation(sprite_rotation_);
 		sprite_.setOrigin(12.0f, 12.0f);
 		sprite_.setScale(sf::Vector2f(3.0f, 3.0f));
-		sprite_.setPosition(sf::Vector2f(75.0f, 75.0f));
+		sprite_.setPosition(sf::Vector2f(555.0f, 180.0f));
+		last_seen_player_ = sprite_.getPosition();
+	}
+	Zombie(sf::RenderWindow* window, TextureManager* tM, Player* player, ZOMBIETYPE type, sf::Vector2f pos) : Entity(window, tM) {
+		int variance = rand() % 10 + 1;
+		switch (type) {
+		case NORMAL:
+			zombie_speed_ = 200.0f + variance;
+			zombie_damage_ = 10.0f;
+			zombie_atkspd_ = 1.0f;
+			detect_range_ = 500.0f;
+			sprite_.setTexture(tM->getTexture("Zombie01"));
+			break;
+		case SCOUT:
+			zombie_speed_ = 275.0f + variance;
+			zombie_damage_ = 5.0f;
+			zombie_atkspd_ = 1.0f;
+			detect_range_ = 600.0f;
+			sprite_.setTexture(tM->getTexture("Zombie04"));
+			break;
+
+		case TANK:
+			zombie_speed_ = 100.0f + variance;
+			zombie_damage_ = 20.0f;
+			zombie_atkspd_ = 1.0f;
+			detect_range_ = 300.0f;
+			sprite_.setTexture(tM->getTexture("Zombie02"));
+			break;
+		}
+		player_ = player;
+		sprite_rotation_ = static_cast<float>(rand() % 360 + 1);
+		sprite_.setRotation(sprite_rotation_);
+		sprite_.setOrigin(12.0f, 12.0f);
+		sprite_.setScale(sf::Vector2f(3.0f, 3.0f));
+		sprite_.setPosition(pos);
 		last_seen_player_ = sprite_.getPosition();
 	}
 
@@ -55,7 +89,8 @@ public:
 			last_seen_player_ = player_->getPosition();
 		}
 		else {
-			moveTo(last_seen_player_, dT);
+			if (getDistance(last_seen_player_, sprite_.getPosition()) > 5.0f)
+				moveTo(last_seen_player_, dT);
 		}
 	}
 protected:
@@ -68,7 +103,7 @@ protected:
 		sprite_.setRotation(sprite_rotation_ - 90.0f);
 		float movementX = static_cast<float>(cos(3.14 * sprite_rotation_ / 180) * zombie_speed_ * dT);
 		float movementY = static_cast<float>(sin(3.14 * sprite_rotation_ / 180) * zombie_speed_ * dT);
-		if (getDistance(sprite_.getPosition(), targetPos) >= 45.0f) {
+		if (getDistance(sprite_.getPosition(), targetPos) >= 65.0f) {
 			sprite_.move(-movementX, -movementY);
 		}
 		else {

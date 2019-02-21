@@ -29,9 +29,6 @@
     <ClInclude Include="Projectile.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="RTSController.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -42,6 +39,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGUI.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
