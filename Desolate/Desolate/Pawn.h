@@ -27,7 +27,7 @@ public:
 			roam(dT);
 			break;
 		case MOVING:
-			moveTo(mTarget, dT, 30.0f);
+			moveTo(target_, dT, 30.0f);
 			break;
 		}
 	}
@@ -36,7 +36,7 @@ public:
 	}
 
 	PawnState mpawn_state;
-	sf::Vector2f mTarget;
+	sf::Vector2f target_;
 private:
 	float getDistance(sf::Vector2f pos1, sf::Vector2f pos2) {
 		return sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y));
