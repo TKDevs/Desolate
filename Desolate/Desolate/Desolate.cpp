@@ -6,6 +6,7 @@
 #include "Zombie.h"
 #include "Scene.h"
 #include "MainGUI.h"
+#include "Quadtree.h"
 
 /* short form
 	dT = delta_time
