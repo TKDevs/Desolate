@@ -16,6 +16,12 @@ public:
 		texture_manager_ = tM;
 	}
 
+	void input(sf::Event event) {
+		for (int i = 0; i < player_list_.size(); ++i) {
+			player_list_[i]->changeDirection(event);
+		}
+	}
+
 	void update(float dT) {
 		for (int i = 0; i < player_list_.size(); ++i) {
 			player_list_[i]->update(dT);
@@ -35,36 +41,26 @@ public:
 		}
 	}
 
-	void setSceneBackground(std::string name) {
-		scene_background_.setTexture(texture_manager_->getTexture(name));
+	void setSceneBackground(sf::Sprite background) {
+		scene_background_ = background;
 	}
-
-	void addPlayer(Player* player) {
-		player_list_.push_back(player);
+	void addPlayer(std::string name) {
+		player_list_.push_back(new Player(window_, texture_manager_, name));
 	}
-
-	void addZombie(Zombie* zombie) {
-		zombie_list_.push_back(zombie);
+	void addZombie(ZOMBIETYPE type) {
+		zombie_list_.push_back(new Zombie(window_, texture_manager_, player_list_[0], type));
 	}
-
-	void removePlayer(Player* player) {
+	void addZombie(ZOMBIETYPE type, sf::Vector2f pos) {
+		zombie_list_.push_back(new Zombie(window_, texture_manager_, player_list_[0], type, pos));
+	}
+	
+	Player* getPlayer(std::string name) {
 		for (int i = 0; i < player_list_.size(); ++i) {
-			if (player->getID() == player_list_[i]->getID()) {
-				delete player;
-				delete player_list_[i];
-				player_list_.erase(player_list_.begin() + i);
+			if (player_list_[i]->getName() == name) {
+				return player_list_[i];
 			}
 		}
-	}
-
-	void removeZombie(Zombie* zombie) {
-		for (int i = 0; i < zombie_list_.size(); ++i) {
-			if (zombie->getID() == zombie_list_[i]->getID()) {
-				delete zombie;
-				delete zombie_list_[i];
-				zombie_list_.erase(zombie_list_.begin() + i);
-			}
-		}
+		return NULL;
 	}
 private:
 	sf::RenderWindow* window_;

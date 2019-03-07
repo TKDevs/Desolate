@@ -3,14 +3,11 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_PropertySheetDisplayName>DesolateDebug64.props</_PropertySheetDisplayName>
+    <IncludePath>C:\Programming Libraries\SFML\SFML\SFML-2.4.2-windows-vc14-64-bit\SFML-2.4.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Programming Libraries\SFML\SFML\SFML-2.4.2-windows-vc14-64-bit\SFML-2.4.2\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
-    <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\User\lib\SFML-2.5.1-64x\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\User\lib\SFML-2.5.1-64x\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>flac.lib;freetype.lib;ogg.lib;openal32.lib;sfml-audio-d.lib;sfml-graphics-d.lib;sfml-main-d.lib;sfml-network-d.lib;sfml-system-d.lib;sfml-window-d.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
