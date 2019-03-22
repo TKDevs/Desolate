@@ -1,64 +1,61 @@
 #ifndef PROJECTILE_H
 #define PROJECTILEH
 
-class Projectile {
+#include <iostream>
+#include <SFML/Graphics.hpp>
+#include "TextureManager.h"
+#include "Entity.h"
+
+struct BulletSpecs {
+	float bullet_rotation;
+	float bullet_speed;
+	float bullet_damage;
+	float bullet_decay_time;
+	std::string bullet_sprite_name;
+};
+
+class Projectile : public Entity {
 public:
+	Projectile(sf::RenderWindow* window, TextureManager* tM, sf::Vector2f startpos, BulletSpecs specs) : Entity(window, tM) {
+		projectile_specs_ = specs;
 
-		/*Projectile Class Needs atleast:
-			- Window pointer
-			- TextureManager pointer
-			- Texture Name
-			- Start Position
-			- Start Rotation
-			- Start Speed
-			- Start Damage
-			- Start Decay Time
-	*/
-
-	Projectile(sf::RenderWindow* window, TextureManager* textureManager, std::string bulletSprite, sf::Vector2f startPos, float rotation, float speed, float damage, float decayTime) {
-		mWindow = window;
-		mTextureManager = textureManager;
-		mSprite.setPosition(startPos);
-		mSprite.setRotation(rotation);
-		mSprite.setTexture(mTextureManager->getTexture(bulletSprite));
-		mSprite.scale(2.0f, 2.0f);
-		mProjectileSpeed = speed;
-		mProjectileDamage = damage;
-		mProjectileDecayTime = decayTime;
-		mIsDecayed = false;
+		window_ = window;
+		texture_manager_ = tM;
+		sprite_.setPosition(startpos);
+		sprite_.setRotation(projectile_specs_.bullet_rotation);
+		sprite_.setTexture(texture_manager_->getTexture(projectile_specs_.bullet_sprite_name));
+		sprite_.scale(2.0f, 2.0f);
+		is_decayed_ = false;
 	}
 
-	void update(float deltaTime) {
-		if (mProjectileClock.getElapsedTime().asSeconds() > mProjectileDecayTime) {
-			mIsDecayed = true;
+	void update(float dT) {
+		if (projectile_clock_.getElapsedTime().asSeconds() > projectile_specs_.bullet_decay_time) {
+			is_decayed_ = true;
 		}
 		else {
-			sf::Vector2f bulletMovement(static_cast<float>(cos(3.14 *  mSprite.getRotation() / 180) * mProjectileSpeed) * deltaTime, static_cast<float>(sin(3.14 * mSprite.getRotation() / 180) * mProjectileSpeed) * deltaTime);
-			mSprite.move(-bulletMovement);
+			sf::Vector2f bulletMovement(static_cast<float>(cos(3.14 *  sprite_.getRotation() / 180) * projectile_specs_.bullet_speed) * dT, static_cast<float>(sin(3.14 * sprite_.getRotation() / 180) * projectile_specs_.bullet_speed) * dT);
+			sprite_.move(-bulletMovement);
 		}
 	}
 
 	void render() {
-		if (!mIsDecayed)
-			mWindow->draw(mSprite);
+		if (!is_decayed_)
+			window_->draw(sprite_);
 	}
 
 	sf::Sprite* getSprite() {
-		return &mSprite;
+		return &sprite_;
 	}
+
 	bool isDecayed() {
-		return mIsDecayed;
+		return is_decayed_;
 	}
 private:
-	sf::RenderWindow*   mWindow;
-	TextureManager*		mTextureManager;
-	sf::Sprite			mSprite;
-	sf::Clock			mProjectileClock;
-
-	float   mProjectileSpeed,
-			mProjectileDamage,
-			mProjectileDecayTime;
-	bool    mIsDecayed;
+	sf::RenderWindow*   window_;
+	TextureManager*		texture_manager_;
+	sf::Clock			projectile_clock_;
+	BulletSpecs			projectile_specs_;
+	bool    is_decayed_;
 };
 
 #endif

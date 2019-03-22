@@ -1,169 +1,77 @@
 #include <iostream>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp> 
 #include "TextureManager.h"
+#include "Entity.h"
 #include "Player.h"
 #include "Zombie.h"
-#include "Pawn.h"
+#include "Scene.h"
+#include "MainGUI.h"
+#include "Quadtree.h"
 
-/*
-	I am going to continue to work on the game from here
-
-	I've decided to go for a more survival-style game instead of the arcade style originally intended.
-
-	Updates:
-		- I've modified how input works in this program. Instead of all the input being managed in the Player class,
-		  I moved the input management to the main loop instead. This should prove to be a preferred alternative to what
-		  I was doing previously.
-		- I've began implementing pointers in places that should make the code run more efficiently.
-		- I've added a deltaTime to the game.
-			- Player movement is now based on the deltaTime variable. This should prove useful when implementing multiplayer
-			  down the line.
-
-	Changes I want to Occur:
-		- I want to create a GUI class for this game. [NOT STARTED]
-		- I want to create a Loot System [NOT STARTED]
-		- I want to clean up Legacy Code for Desolate. [IN-PROGESS]
+/* short form
+	dT = delta_time
+	tM = texture_manager
 */
 
 void loadTextures(TextureManager& tM) {
 	tM.addTexture("Human01", "Data/Human01.png");
 	tM.addTexture("Zombie01", "Data/Zombie01.png");
+	tM.addTexture("Zombie02", "Data/Zombie02.png");
+	tM.addTexture("Zombie03", "Data/Zombie03.png");
+	tM.addTexture("Zombie04", "Data/Zombie04.png");
 	tM.addTexture("Bullet01", "Data/Bullet01.png");
+	tM.addTexture("Background01", "Data/background01.png");
+	tM.addTexture("Hatchet", "Data/Hatchet.png");
+	tM.addTexture("Machete", "Data/Machete.png");
+	tM.addTexture("Bat", "Data/Bat.png");
+	tM.addTexture("GUIHunger", "Data/GUIHunger.png");
+	tM.addTexture("GUIThirst", "Data/GUIThirst.png");
+	tM.addTexture("GUIRest", "Data/GUIRest.png");
+	tM.addTexture("GUIHealth", "Data/GUIHealth.png");
 }
 
-int ZombieMain() {
-	sf::RenderWindow gwindow(sf::VideoMode(1280, 960), "Desolate"); //gwindow = global window
-	sf::Event gevent;
-	sf::Clock delta_clock;
+void ZombieMain() {
+	sf::RenderWindow gWindow(sf::VideoMode(1280, 960), "Derilict v1.0"); gWindow.setPosition(sf::Vector2i(200, 10));
+	sf::Event gEvent;
+	sf::Clock deltaClock;
+	TextureManager gtM;
+	loadTextures(gtM);
 
-	TextureManager tM;
+	Scene scene(&gWindow, &gtM);
+	sf::Sprite background; background.setTexture(gtM.getTexture("Background01"));
+	background.setScale(4.0f, 4.0f);
+	scene.setSceneBackground(background);
+	scene.addPlayer("George");
+	scene.addZombie(NORMAL, sf::Vector2f(560, 80));
+	scene.addZombie(SCOUT, sf::Vector2f(1450, 110));
 
-	loadTextures(tM);
+	MainGUI gGameGUI(&gWindow, &gtM, scene.getPlayer("George"));
 
-	Player player(&gwindow, &tM);
-
-	Zombie zombie(&gwindow, &player, &tM);
-
-	sf::Clock clock;
-
-	while (gwindow.isOpen()) {
-
-		sf::Time dt = delta_clock.restart();
-
-		while (gwindow.pollEvent(gevent)) {
-			if (gevent.type == sf::Event::MouseButtonPressed) {
-				if (gevent.mouseButton.button == sf::Mouse::Left)
-					player.mgun_shot = true;
-			}
-			if (gevent.type == sf::Event::MouseButtonReleased) {
-				if (gevent.mouseButton.button == sf::Mouse::Left)
-					player.mgun_shot = false;
-			}
-			if (gevent.type == sf::Event::Closed) {
-				gwindow.close();
-			}
-			if (gevent.type == sf::Event::KeyPressed) {
-				player.changeDirection(gevent);
-				switch (gevent.key.code) {
-				case sf::Keyboard::Escape:
-					gwindow.close();
-					break;
-				}
-			}
-			if (gevent.type == sf::Event::KeyReleased) {
-				player.changeDirection(gevent);
-			}
+	while (gWindow.isOpen()) {
+		sf::Time dT = deltaClock.restart();
+		// Input Code
+		while (gWindow.pollEvent(gEvent)) {
+			if (gEvent.type == sf::Event::Closed)
+				gWindow.close();
+			scene.getPlayer("George")->changeDirection(gEvent);
+			gGameGUI.input(&gEvent);
 		}
-
-		player.update(dt.asSeconds());
-		zombie.update(dt.asSeconds());
-
-		gwindow.clear(sf::Color(13, 39, 38, 255));
-		player.render();
-		zombie.render();
-		gwindow.display();
+		// Update Code
+		scene.update(dT.asSeconds());
+		gGameGUI.update(dT.asSeconds());
+		sf::View view = gWindow.getView();
+		view.setCenter(scene.getPlayer("George")->getPosition());
+		gWindow.setView(view);
+		// Render Code
+		gWindow.clear(sf::Color(13, 39, 38, 255));
+		scene.render();
+		gGameGUI.render();
+		gWindow.display();
 	}
 
-	return 0;
-}
-
-int RTSMain() {
-	sf::RenderWindow gwindow(sf::VideoMode(1280, 960), "RTS Game");
-	sf::Event gevent;
-	sf::Clock delta_clock;
-
-	TextureManager gTextureManager;
-	loadTextures(gTextureManager);
-
-	srand(time(NULL));
-
-	std::vector<Pawn> pawns;
-
-	for (int i = 0; i != 5; i++) {
-		pawns.push_back(Pawn(&gwindow, &gTextureManager));
-	}
-
-	while (gwindow.isOpen()) {
-
-		float deltaTime = delta_clock.restart().asSeconds();
-
-		while (gwindow.pollEvent(gevent)) {
-			if (gevent.type == sf::Event::Closed)
-				gwindow.close();
-			if (gevent.type == sf::Event::KeyPressed)
-				if (gevent.key.code == sf::Keyboard::Escape)
-					gwindow.close();
-			if (gevent.type == sf::Event::MouseButtonPressed) {
-				if (gevent.mouseButton.button == sf::Mouse::Left) {
-					for (int i = 0; i != pawns.size(); i++) {
-						pawns[i].mpawn_state = MOVING;
-						pawns[i].mTarget = sf::Vector2f(sf::Mouse::getPosition(gwindow));
-					}
-				}
-			}
-		}
-
-		for (int i = 0; i != pawns.size(); i++) {
-			pawns[i].update(deltaTime);
-		}
-
-
-		gwindow.clear(sf::Color(50, 50, 50, 255));
-		for (int i = 0; i != pawns.size(); i++) {
-			pawns[i].render();
-		}
-		gwindow.display();
-	}
-
-	return 0;
 }
 
 int main() {
 	ZombieMain();
 	return 0;
 }
-
-//void auraEffect(Player* player) {
-//	sf::CircleShape circle;
-//	sf::CircleShape circle1;
-//	sf::CircleShape circle2;
-//
-//	circle.setFillColor(sf::Color::Red);
-//	circle.setRadius(5.0f);
-//	circle.setOrigin(circle.getRadius() / 2.0f, circle.getRadius() / 2.0f);
-//	circle.setPosition(sf::Vector2f(player.msprite.getPosition().x + sinf(clock.getElapsedTime().asSeconds() * 5.0f) * 100.0f, player.msprite.getPosition().y + cosf(clock.getElapsedTime().asSeconds() * 5.0f) * 100.0f));
-//
-//	circle1.setFillColor(sf::Color::Green);
-//	circle1.setRadius(5.0f);
-//	circle1.setOrigin(circle1.getRadius() / 2.0f, circle1.getRadius() / 2.0f);
-//	circle1.setPosition(sf::Vector2f(player.msprite.getPosition().x + sinf(clock.getElapsedTime().asSeconds() * 5.0f + 90.0f) * 100.0f, player.msprite.getPosition().y + cosf(clock.getElapsedTime().asSeconds() * 7.0f + 90.0f) * 100.0f));
-//
-//	circle2.setFillColor(sf::Color::Blue);
-//	circle2.setRadius(5.0f);
-//	circle2.setOrigin(circle2.getRadius() / 2.0f, circle2.getRadius() / 2.0f);
-//	circle2.setPosition(sf::Vector2f(player.msprite.getPosition().x + sinf(clock.getElapsedTime().asSeconds() * 5.0f + 180.0f) * 100.0f, player.msprite.getPosition().y + cosf(clock.getElapsedTime().asSeconds() * 3.0f + 180.0f) * 100.0f));
-//
-//	gwindow.draw(circle);
-//	gwindow.draw(circle1);
-//	gwindow.draw(circle2);
-//}

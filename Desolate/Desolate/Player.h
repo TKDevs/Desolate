@@ -2,84 +2,107 @@
 #define PLAYER_H
 
 #include <deque>
-
+#include "Entity.h"
+#include "TextureManager.h"
 #include "Projectile.h"
 
-class Player {
+class Player : public Entity {
 public:
-	Player(sf::RenderWindow* window, TextureManager* tM) : m_window(window), mTM(tM) {
-		mmove_up = false, mmove_down = false, mmove_left = false, mmove_right = false;
-		m_movement_speed = 250.0f;
-		msprinting_speed = 450.0f;
-		msprite_speed = m_movement_speed;
-		mplayer_rotation = 0.0f;
+	struct VitalsPackage {
+		float hunger = 100,
+			thirst = 100,
+			health = 100,
+			rest = 100;
+		float hungerLossRate = 0.1f,
+			thirstLossRate = 0.1f,
+			healthLossRate = 0.0f,
+			restLossRate = 0.1f;
+	};
 
-		msprite.setTexture(mTM->getTexture("Human01"));
-		msprite.setOrigin(12.0f, 12.0f);
-		msprite.setScale(sf::Vector2f(4.0f, 4.0f));
-		msprite.setPosition(sf::Vector2f(640, 480));
-		msprite.setRotation(mplayer_rotation);
+	Player(sf::RenderWindow* window, TextureManager* tM, std::string name) : Entity(window, tM) {
+		name_ = name;
+		move_up_ = false;
+		move_down_ = false;
+		move_left_ = false;
+		move_right_ = false;
+		sprinting_speed_ = 350.0f;
+		normal_speed_ = 250.0f;
+		sprite_speed_ = normal_speed_;
+		sprite_rotation_ = 0.0f;
+
+		sprite_.setTexture(tM->getTexture("Human01"));
+		sprite_.setOrigin(12.0f, 12.0f);
+		sprite_.setScale(sf::Vector2f(3.0f, 3.0f));
+		sprite_.setPosition(sf::Vector2f(1000, 950));
+		sprite_.setRotation(sprite_rotation_);
 	}
 
-	void update(float deltaTime) {
-		// Movement Code:
-		(msprinting) ? msprite_speed = msprinting_speed : msprite_speed = m_movement_speed;
-
-		if (mmove_up)
-			msprite.move(sf::Vector2f(0.0f, -msprite_speed * deltaTime));
-		if (mmove_down)
-			msprite.move(sf::Vector2f(0.0f, msprite_speed * deltaTime));
-		if (mmove_left)
-			msprite.move(sf::Vector2f(-msprite_speed * deltaTime, 0.0f));
-		if (mmove_right)
-			msprite.move(sf::Vector2f(msprite_speed * deltaTime, 0.0f));
-		// End of Movement Code
-
-		// Sprite Rotation Code:
-		mplayer_rotation = (atan2(msprite.getPosition().y - sf::Mouse::getPosition(*m_window).y, (msprite.getPosition().x - sf::Mouse::getPosition(*m_window).x)) * 180.0f / 3.14f);
-		msprite.setRotation(mplayer_rotation - 90.0f);
-		// End of Sprite Rotation Code
-
-		// Start of Bullet Mechanic
-		if (mbullets.size() != 0 && mbullets[0].isDecayed()) {
-			std::cout << "Bullets: " << mbullets.size() << std::endl;
-			mbullets.pop_front();
+	void update(float dT) {
+		if (vitals_clock_.getElapsedTime().asSeconds() >= 1.0f) {
+			vitals_.hunger -= vitals_.hungerLossRate;
+			vitals_.thirst -= vitals_.thirstLossRate;
+			vitals_.rest -= vitals_.restLossRate;
+			vitals_clock_.restart();
 		}
-		
-		if (mgun_shot) {
-			mbullets.push_back(Projectile(m_window, mTM, "Bullet01", msprite.getPosition(), mplayer_rotation, 1700.0f, 30.0f, 2.5f));
-			mgun_shot = false;
+		if (sprinting_) {
+			sprite_speed_ = sprinting_speed_;
+			vitals_.hungerLossRate = 0.2f;
+			vitals_.thirstLossRate = 0.2f;
+			vitals_.restLossRate = 0.2f;
 		}
-
-		for (int i = 0; i < mbullets.size(); ++i) {
-			mbullets[i].update(deltaTime);
+		else {
+			sprite_speed_ = normal_speed_;
+			vitals_.hungerLossRate = 0.1f;
+			vitals_.thirstLossRate = 0.1f;
+			vitals_.restLossRate = 0.1f;
 		}
-	}
-
-	void render() {
-		for (int i = 0; i < mbullets.size(); ++i) {
-			mbullets[i].render();
+		sf::Vector2f movement; float slowdown = 1.30f;
+		if (move_up_)
+			movement.y -= sprite_speed_ * dT;
+		if (move_down_)
+			movement.y += sprite_speed_ * dT;
+		if (move_left_)
+			movement.x -= sprite_speed_ * dT;
+		if (move_right_)
+			movement.x += sprite_speed_ * dT;
+		if (move_up_ && move_left_) {
+			movement.x = -sprite_speed_ * dT / slowdown;
+			movement.y = -sprite_speed_ * dT / slowdown;
 		}
-		m_window->draw(msprite);
+		if (move_up_ && move_right_) {
+			movement.x = sprite_speed_ * dT / slowdown;
+			movement.y = -sprite_speed_ * dT / slowdown;
+		}
+		if (move_down_ && move_left_) {
+			movement.x = -sprite_speed_ * dT / slowdown;
+			movement.y = sprite_speed_ * dT / slowdown;
+		}
+		if (move_down_ && move_right_) {
+			movement.x = sprite_speed_ * dT / slowdown;
+			movement.y = sprite_speed_ * dT / slowdown;
+		}
+		sprite_.move(movement);
+		sprite_rotation_ = (atan2(sprite_.getPosition().y - window_->mapPixelToCoords(sf::Mouse::getPosition(*window_)).y, (sprite_.getPosition().x - window_->mapPixelToCoords(sf::Mouse::getPosition(*window_)).x)) * 180.0f / 3.14f);
+		sprite_.setRotation(sprite_rotation_ - 90.0f);
 	}
 
 	void changeDirection(sf::Event event) {
 		if (event.type == sf::Event::KeyPressed) {
-			switch(event.key.code){
+			switch (event.key.code) {
 			case sf::Keyboard::W:
-				mmove_up = true;
+				move_up_ = true;
 				break;
 			case sf::Keyboard::A:
-				mmove_left = true;
+				move_left_ = true;
 				break;
 			case sf::Keyboard::S:
-				mmove_down = true;
+				move_down_ = true;
 				break;
 			case sf::Keyboard::D:
-				mmove_right = true;
+				move_right_ = true;
 				break;
 			case sf::Keyboard::LShift:
-				msprinting = true;
+				sprinting_ = true;
 				break;
 			default:
 				break;
@@ -89,19 +112,19 @@ public:
 		if (event.type == sf::Event::KeyReleased) {
 			switch (event.key.code) {
 			case sf::Keyboard::W:
-				mmove_up = false;
+				move_up_ = false;
 				break;
 			case sf::Keyboard::A:
-				mmove_left = false;
+				move_left_ = false;
 				break;
 			case sf::Keyboard::S:
-				mmove_down = false;
+				move_down_ = false;
 				break;
 			case sf::Keyboard::D:
-				mmove_right = false;
+				move_right_ = false;
 				break;
 			case sf::Keyboard::LShift:
-				msprinting = false;
+				sprinting_ = false;
 				break;
 			default:
 				break;
@@ -109,20 +132,21 @@ public:
 		}
 	}
 
-	bool mmove_up, mmove_down, mmove_left, mmove_right, msprinting;
+	VitalsPackage getVitals() {
+		return vitals_;
+	}
 
-	// Bullet Mechanic Variables
-
-	bool mgun_shot;
-
-	sf::Sprite msprite;
-	std::deque<Projectile> mbullets;
+	std::string getName() {
+		return name_;
+	}
 private:
+	bool move_up_, move_down_, move_left_, move_right_, sprinting_, shot_gun_;
+	float sprinting_speed_, normal_speed_, sprite_speed_, sprite_rotation_;
 
-	float m_movement_speed, msprinting_speed, msprite_speed, mplayer_rotation;
+	std::string name_;
 
-	sf::RenderWindow* m_window;
-	TextureManager* mTM;
+	sf::Clock vitals_clock_;
+	VitalsPackage vitals_;
 };
 
 #endif
